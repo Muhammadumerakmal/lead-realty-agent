@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Realty desk triage agent — turns one raw client inquiry into a typed verdict your code can act on."
 readme = "README.md"
 authors = [
-    { name = "muhammadumerakmal" }
+    { name = "muhammadumerakmal", email = "umeraura99@gmail.com" }
 ]
 requires-python = ">=3.13"
 dependencies = [
