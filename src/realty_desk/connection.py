@@ -1,7 +1,7 @@
 """Task 0 — the bare connectivity check.
 
 A plain agent, no tools, no structured output: just enough to prove the key
-loads, the Gemini endpoint answers, and the async runner works end to end.
+loads, the model endpoint answers, and the async runner works end to end.
 """
 
 from __future__ import annotations

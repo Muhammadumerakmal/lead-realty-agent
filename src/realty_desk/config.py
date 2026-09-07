@@ -1,8 +1,11 @@
 """Model wiring — Task 0.
 
-The Agents SDK talks OpenAI's wire format. Gemini exposes an OpenAI-compatible
-endpoint, so we point an ``AsyncOpenAI`` client at it and hand that to
-``OpenAIChatCompletionsModel``. The key is read from a git-ignored ``.env``.
+The Agents SDK speaks OpenAI's wire format. This project runs on OpenAI
+(``gpt-4o-mini``); put ``OPENAI_API_KEY`` in a git-ignored ``.env``.
+
+A Gemini key is also accepted: set ``GEMINI_API_KEY`` instead and it routes to
+Gemini's OpenAI-compatible endpoint with ``gemini-2.5-flash``. Whichever key is
+present wins, OpenAI first.
 """
 
 from __future__ import annotations
@@ -13,22 +16,38 @@ from agents import OpenAIChatCompletionsModel, set_tracing_disabled
 from dotenv import load_dotenv
 from openai import AsyncOpenAI
 
+OPENAI_MODEL = "gpt-4o-mini"  # bump to "gpt-4.1-mini" for sharper triage judgement
+GEMINI_MODEL = "gemini-2.5-flash"
 GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
-MODEL_NAME = "gemini-2.5-flash"
+
+
+def active_model_label() -> str:
+    """Name of the model the next :func:`get_model` call will build (for status lines)."""
+    load_dotenv()
+    if os.environ.get("OPENAI_API_KEY"):
+        return OPENAI_MODEL
+    if os.environ.get("GEMINI_API_KEY"):
+        return GEMINI_MODEL
+    return "no model (missing API key)"
 
 
 def get_model() -> OpenAIChatCompletionsModel:
-    """Build the Gemini-backed chat model, or exit with a message (not a traceback)."""
+    """Build the chat model from whichever key is set, or exit with a message (not a traceback)."""
     load_dotenv()
-    api_key = os.environ.get("GEMINI_API_KEY")
-    if not api_key:
-        raise SystemExit(
-            "GEMINI_API_KEY is not set. Copy .env.example to .env and add your key."
-        )
 
-    # Tracing uploads run data to the OpenAI platform; we have no key for that and
-    # do not need it here.
+    # Tracing uploads run data to the OpenAI platform; not needed here.
     set_tracing_disabled(True)
 
-    client = AsyncOpenAI(api_key=api_key, base_url=GEMINI_BASE_URL)
-    return OpenAIChatCompletionsModel(model=MODEL_NAME, openai_client=client)
+    openai_key = os.environ.get("OPENAI_API_KEY")
+    if openai_key:
+        client = AsyncOpenAI(api_key=openai_key)
+        return OpenAIChatCompletionsModel(model=OPENAI_MODEL, openai_client=client)
+
+    gemini_key = os.environ.get("GEMINI_API_KEY")
+    if gemini_key:
+        client = AsyncOpenAI(api_key=gemini_key, base_url=GEMINI_BASE_URL)
+        return OpenAIChatCompletionsModel(model=GEMINI_MODEL, openai_client=client)
+
+    raise SystemExit(
+        "No API key found. Copy .env.example to .env and set OPENAI_API_KEY (or GEMINI_API_KEY)."
+    )

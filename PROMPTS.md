@@ -57,6 +57,10 @@ _Covered by the planning prompts above._ `hooks.py` (`AuditHooks` +
    table, a guardrail-results table, a coloured audit trail, and a red "cannot
    start" panel for a missing key. Logic modules stay output-free. Also added a
    `.gitattributes` to normalise line endings to LF.
+7. `leave it we will use openaikey` — made OpenAI the real model. `config.py` now
+   prefers `OPENAI_API_KEY` (`gpt-4o-mini`) and keeps `GEMINI_API_KEY` as an
+   automatic fallback to `gemini-2.5-flash`. Ran the full demo live on OpenAI and
+   committed the resulting `saved.json` (L001 + L004, both priority=high).
 
 ## Amendment
 

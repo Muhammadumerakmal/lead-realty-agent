@@ -19,7 +19,7 @@ from rich.syntax import Syntax
 from rich.table import Table
 
 from realty_desk.agent import build_triage_agent
-from realty_desk.config import get_model
+from realty_desk.config import active_model_label, get_model
 from realty_desk.connection import HARDCODED_MESSAGE, build_connection_agent
 from realty_desk.context import sample_agency
 from realty_desk.hooks import AuditHooks, set_audit
@@ -56,7 +56,7 @@ async def task0_connection() -> None:
     section("0", "Project and connection")
     agent = build_connection_agent(get_model())
     console.print(f"[dim]client >[/] {escape(HARDCODED_MESSAGE)}")
-    with console.status("contacting gemini-2.5-flash..."):
+    with console.status(f"contacting {active_model_label()}..."):
         result = await Runner.run(agent, HARDCODED_MESSAGE)
     console.print(Panel(escape(str(result.final_output)), title="agent reply", border_style="green"))
 
@@ -200,7 +200,7 @@ async def demo() -> None:
 def main() -> None:
     try:
         asyncio.run(demo())
-    except SystemExit as exc:  # e.g. missing GEMINI_API_KEY - a message, not a traceback
+    except SystemExit as exc:  # e.g. missing API key - a message, not a traceback
         console.print(Panel(escape(str(exc)), title="cannot start", border_style="red"))
         raise SystemExit(1) from None
 

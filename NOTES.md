@@ -2,7 +2,7 @@
 
 One line per task: what broke first, what changed.
 
-- **Task 0** — `uv init` pinned `requires-python = ">=3.14"` and a `realty_desk:main` script entry; lowered to `>=3.13` and pointed the entry at `realty_desk.main:main`, and made a missing key raise `SystemExit("...copy .env.example...")` so it prints a message, not a traceback.
+- **Task 0** — `uv init` pinned `requires-python = ">=3.14"` and a `realty_desk:main` script entry; lowered to `>=3.13` and pointed the entry at `realty_desk.main:main`, and made a missing key raise `SystemExit("...copy .env.example...")` so it prints a message, not a traceback. Runs on OpenAI `gpt-4o-mini` (`OPENAI_API_KEY`); a `GEMINI_API_KEY` still works and routes to `gemini-2.5-flash` with no code change.
 - **Task 1** — `find_listings` did a plain substring match, so "DHA Phase 5 Lahore" missed the "DHA Phase 5, Lahore" listing over one comma and the flagship serious buyer was told "no inventory"; replaced it with a punctuation-insensitive token match (every query token must appear in the listing's tokens).
 - **Task 2** — `Agent(model=...)` type-checks at construction so a stub model won't load; used `model=None` for the offline wiring check and confirmed `lookup_listing_availability.params_json_schema` exposes only `area` / `listing_type` — the SDK strips `wrapper` itself.
 - **Task 3** — `saved.json` was resolved against the caller's cwd; fixed it to project root via `Path(__file__).resolve().parents[2]`, and the save banner runs `int(budget_pkr * 1.05)` to prove the field is a real int.

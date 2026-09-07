@@ -7,14 +7,15 @@ and agent availability through tools, and returns a **typed verdict**
 **your Python code** — not the model — decides it is worth one. Messages asking
 the desk to misrepresent a property are refused with **zero model calls**.
 
-Model: `gemini-2.5-flash` via its OpenAI-compatible endpoint, driven by the
-OpenAI Agents SDK.
+Model: OpenAI `gpt-4o-mini`, driven by the OpenAI Agents SDK. Set
+`GEMINI_API_KEY` instead of `OPENAI_API_KEY` and it routes to Gemini's
+OpenAI-compatible endpoint with `gemini-2.5-flash` — no code change.
 
 ## Run
 
 ```bash
 uv sync
-cp .env.example .env          # then put your real GEMINI_API_KEY in .env
+cp .env.example .env          # then set OPENAI_API_KEY (or GEMINI_API_KEY) in .env
 uv run realty-desk
 ```
 
@@ -22,7 +23,7 @@ One command runs an ordered, rubric-labeled demo (rendered with [Rich](https://g
 
 | Section | What it shows |
 | --- | --- |
-| Task 0 | Key loads from `.env`, Gemini answers, async runner works — plain reply, no traceback |
+| Task 0 | Key loads from `.env`, the model answers, async runner works — plain reply, no traceback |
 | Tasks 1–3 | Triage of the 6 fixtures in `leads.json`; `lookup_listing_availability` is called before any price; serious leads print `[SAVE] …` and land in `saved.json` |
 | Task 2 | `lookup_listing_availability.params_json_schema` has **no** `context` parameter; `seller_min_price_pkr` lives only in `context.py` |
 | Task 4 | A misrepresentation message and an injection probe are declined in ~1 ms (no model call); an ordinary lead right after still passes |
@@ -32,7 +33,7 @@ One command runs an ordered, rubric-labeled demo (rendered with [Rich](https://g
 
 ```
 src/realty_desk/
-  config.py       Gemini model wiring (Task 0); friendly exit if key missing
+  config.py       model wiring — OpenAI, or Gemini if that key is set (Task 0); friendly exit if no key
   context.py      AgencyProfile + Listing dataclasses; sample_agency() — PRIVATE data (Task 2)
   schemas.py      LeadTriage — the structured output type (Task 3)
   tools.py        lookup_listing_availability, check_agent_availability — read from context (Tasks 1–2)
