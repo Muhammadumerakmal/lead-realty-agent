@@ -18,7 +18,7 @@ cp .env.example .env          # then put your real GEMINI_API_KEY in .env
 uv run realty-desk
 ```
 
-One command runs an ordered, rubric-labeled demo:
+One command runs an ordered, rubric-labeled demo (rendered with [Rich](https://github.com/Textualize/rich) — section rules, a triage table, a guardrail table, and a coloured audit trail):
 
 | Section | What it shows |
 | --- | --- |
@@ -41,6 +41,7 @@ src/realty_desk/
   hooks.py        AuditHooks — lifecycle logging of tool calls (Task 5C)
   agent.py        build_triage_agent() — ties tools + guardrail + output_type together
   connection.py   Task 0 bare connectivity agent
+  ui.py           shared Rich console + small formatters (presentation layer only)
   main.py         the one-command demo
 leads.json        6 fixtures (committed)
 saved.json        starts as [] (committed)
@@ -56,7 +57,8 @@ saved.json        starts as [] (committed)
 
 ## What the audit-trail order reveals
 
-The tool calls fire `model → tool → model → tool → model`. The agent loop
-re-enters the model after every tool result and only stops when the model returns
-the typed `LeadTriage` instead of another tool call. Tools are resolved one at a
-time, each time the model asks for one — they are not gathered up front.
+Each model turn asks for one or more tools; the loop runs them, feeds every result
+back, and the model runs again — `model → tool(s) → model → … → LeadTriage`. It
+ends only when the model returns the typed `LeadTriage` instead of another tool
+call. In the trace, `->` lines that cluster before the `<-` lines mean the model
+asked for those tools together in one turn; interleaved lines mean one at a time.

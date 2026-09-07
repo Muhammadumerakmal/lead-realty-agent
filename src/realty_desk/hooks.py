@@ -1,4 +1,4 @@
-"""Audit trail — Task 5, option C.
+"""Audit trail - Task 5, option C.
 
 ``AuditHooks`` is a run-level lifecycle listener. ``on_tool_start`` /
 ``on_tool_end`` fire around every tool call the agent loop makes, so printing
@@ -11,9 +11,9 @@ calls :func:`audit_args` on entry. That line prints only while auditing is armed
 What the order shows: model -> tool(s) -> model -> ... -> final ``LeadTriage``.
 Each model turn asks for one or more tools; the loop runs them, feeds every
 result back, and the model runs again. It ends only when the model emits the
-typed output instead of another tool call. If the ``->`` lines cluster before
-the ``<-`` lines, that turn requested those tools together; if they interleave,
-the model asked one at a time.
+typed output instead of another tool call. If the start (arrow-out) lines
+cluster before the end (arrow-in) lines, that turn requested those tools
+together; if they interleave, the model asked one at a time.
 """
 
 from __future__ import annotations
@@ -21,6 +21,9 @@ from __future__ import annotations
 from typing import Any
 
 from agents import RunContextWrapper, RunHooks
+from rich.markup import escape
+
+from realty_desk.ui import console
 
 _AUDIT_ON = False
 
@@ -36,7 +39,7 @@ def audit_args(tool_name: str, **kwargs: Any) -> None:
     if not _AUDIT_ON:
         return
     rendered = ", ".join(f"{key}={value!r}" for key, value in kwargs.items())
-    print(f"      args[{tool_name}]: {rendered}")
+    console.print(f"      [dim]args {tool_name}:[/] {escape(rendered)}")
 
 
 class AuditHooks(RunHooks):
@@ -49,7 +52,7 @@ class AuditHooks(RunHooks):
     async def on_tool_start(self, context: RunContextWrapper[Any], agent: Any, tool: Any) -> None:
         self._seq += 1
         self._open.append((self._seq, tool.name))
-        print(f"  #{self._seq} -> {tool.name}")
+        console.print(f"  [cyan]#{self._seq}[/] [green]->[/] [bold]{tool.name}[/]")
 
     async def on_tool_end(
         self, context: RunContextWrapper[Any], agent: Any, tool: Any, result: Any
@@ -58,4 +61,4 @@ class AuditHooks(RunHooks):
         one_line = " ".join(str(result).split())
         if len(one_line) > 140:
             one_line = one_line[:137] + "..."
-        print(f"  #{seq} <- {name}  result={one_line!r}")
+        console.print(f"  [cyan]#{seq}[/] [magenta]<-[/] [bold]{name}[/]  [dim]{escape(one_line)}[/]")

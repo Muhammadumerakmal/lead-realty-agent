@@ -52,6 +52,11 @@ _Covered by the planning prompts above._ `hooks.py` (`AuditHooks` +
    `gpt-4o-mini` to exercise the tool / guardrail / save / structured-output
    paths, which surfaced the Task 1 comma-match bug, then reverted `config.py` to
    Gemini-only. The committed code stays on `gemini-2.5-flash`.
+6. `everything done? also use rich` — added a `ui.py` Rich console and moved the
+   demo's presentation onto it: section rules, an agent-reply panel, a triage
+   table, a guardrail-results table, a coloured audit trail, and a red "cannot
+   start" panel for a missing key. Logic modules stay output-free. Also added a
+   `.gitattributes` to normalise line endings to LF.
 
 ## Amendment
 
