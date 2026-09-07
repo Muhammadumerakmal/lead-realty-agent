@@ -8,11 +8,12 @@ The SDK does not hand tool *arguments* to ``on_tool_start``, so each tool also
 calls :func:`audit_args` on entry. That line prints only while auditing is armed
 (``set_audit(True)``), which ``main`` does just for the Task 5 demo run.
 
-What the order shows: the model and the tools take strict turns —
-model -> tool -> model -> tool -> model -> final ``LeadTriage``. Tools are
-resolved one at a time, each time the model asks for one; they are not gathered
-up front. The loop only ends when the model emits the typed output instead of
-another tool call.
+What the order shows: model -> tool(s) -> model -> ... -> final ``LeadTriage``.
+Each model turn asks for one or more tools; the loop runs them, feeds every
+result back, and the model runs again. It ends only when the model emits the
+typed output instead of another tool call. If the ``->`` lines cluster before
+the ``<-`` lines, that turn requested those tools together; if they interleave,
+the model asked one at a time.
 """
 
 from __future__ import annotations
@@ -35,7 +36,7 @@ def audit_args(tool_name: str, **kwargs: Any) -> None:
     if not _AUDIT_ON:
         return
     rendered = ", ".join(f"{key}={value!r}" for key, value in kwargs.items())
-    print(f"      args: {rendered}")
+    print(f"      args[{tool_name}]: {rendered}")
 
 
 class AuditHooks(RunHooks):

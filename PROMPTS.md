@@ -42,7 +42,17 @@ pure regex, `@input_guardrail`), attached to the agent; `main.py` catches
 _Covered by the planning prompts above._ `hooks.py` (`AuditHooks` +
 `audit_args`), passed to `Runner.run(hooks=...)` for one demo lead.
 
-## Amendment / follow-ups
+## Follow-ups
 
-_(Record any later prompts here as they happen — e.g. a late spec change and the
-one-line request that absorbed it.)_
+4. `https://github.com/Muhammadumerakmal/lead-realty-agent push here with proper
+   comments` — restructured the single scaffold commit into nine task-scoped
+   commits and pushed to `main`.
+5. `make .env and paste this <OpenAI key>` → `Smoke-test on OpenAI, then revert` —
+   the pasted key was an OpenAI key, not a Gemini one; ran the full demo against
+   `gpt-4o-mini` to exercise the tool / guardrail / save / structured-output
+   paths, which surfaced the Task 1 comma-match bug, then reverted `config.py` to
+   Gemini-only. The committed code stays on `gemini-2.5-flash`.
+
+## Amendment
+
+_(Record a late spec change and the one-line request that absorbed it here.)_

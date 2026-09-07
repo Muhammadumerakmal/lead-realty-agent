@@ -11,7 +11,13 @@ goes to the model.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
+
+
+def _tokens(text: str) -> list[str]:
+    """Lowercase word tokens, punctuation dropped ('DHA Phase 5, Lahore' -> [dha, phase, 5, lahore])."""
+    return re.sub(r"[^a-z0-9 ]+", " ", text.lower()).split()
 
 
 @dataclass
@@ -36,16 +42,21 @@ class AgencyProfile:
     licensed: bool
 
     def find_listings(self, *, area: str | None = None, listing_type: str | None = None) -> list[Listing]:
-        """Case-insensitive substring match on area and/or type. Empty query -> no match."""
+        """Token match on area and/or type, punctuation-insensitive. Empty query -> no match.
+
+        A listing matches when every query token appears in the listing's tokens, so
+        "DHA Phase 5 Lahore" still matches "DHA Phase 5, Lahore" and "10 marla house"
+        matches "10 marla house".
+        """
         if not area and not listing_type:
             return []
-        area_q = (area or "").strip().lower()
-        type_q = (listing_type or "").strip().lower()
+        area_q = _tokens(area or "")
+        type_q = _tokens(listing_type or "")
         out: list[Listing] = []
         for listing in self.listings:
-            if area_q and area_q not in listing.area.lower():
+            if area_q and not all(tok in _tokens(listing.area) for tok in area_q):
                 continue
-            if type_q and type_q not in listing.type.lower():
+            if type_q and not all(tok in _tokens(listing.type) for tok in type_q):
                 continue
             out.append(listing)
         return out

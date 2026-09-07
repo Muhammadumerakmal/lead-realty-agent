@@ -128,9 +128,11 @@ async def task5_audit_trail() -> None:
         set_audit(False)
     print(f"\nverdict> {result.final_output.model_dump()}")
     print(
-        "\nWhat the order shows: model -> tool -> model -> tool -> model. The loop re-enters "
-        "the model after each tool result and only stops when the model emits the typed "
-        "LeadTriage instead of another tool call. Tools are resolved one at a time, as asked."
+        "\nWhat the order shows: the model runs, asks for one or more tools, the loop runs "
+        "those and feeds every result back, then the model runs again. It repeats until the "
+        "model returns the typed LeadTriage instead of another tool call. When the '->' lines "
+        "cluster before the '<-' lines, the model requested those tools together in one turn; "
+        "when they interleave, it asked for them one at a time."
     )
 
 

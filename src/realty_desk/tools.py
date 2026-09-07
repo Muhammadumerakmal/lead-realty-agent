@@ -43,13 +43,13 @@ async def lookup_listing_availability(
     query = " / ".join(part for part in (area, listing_type) if part)
     if not matches:
         return (
-            f"No active listings match '{query}'. {profile.agency_name} has nothing to offer here — "
-            f"tell the client that; do not quote a price or describe a property."
+            f"No active listings match '{query}'. {profile.agency_name} has nothing to offer here. "
+            f"Tell the client that; do not quote a price or describe a property."
         )
 
     prices = [m.asking_price_pkr for m in matches]
     lines = [
-        f"- {m.id}: {m.type} in {m.area} — asking PKR {m.asking_price_pkr:,}"
+        f"- {m.id}: {m.type} in {m.area}, asking PKR {m.asking_price_pkr:,}"
         for m in matches
     ]
     return (
