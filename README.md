@@ -29,6 +29,19 @@ One command runs an ordered, rubric-labeled demo (rendered with [Rich](https://g
 | Task 4 | A misrepresentation message and an injection probe are declined in ~1 ms (no model call); an ordinary lead right after still passes |
 | Task 5C | Every tool call logged in firing order with args + result |
 
+### Web UI
+
+```bash
+uv run realty-desk-web        # then open http://127.0.0.1:8000
+```
+
+A one-page front end over the same agent: paste an inquiry, get the typed
+`LeadTriage` back (priority badge, budget, red flags, suggested reply), see
+whether **your code** saved it, and watch the callback list (`saved.json`) grow.
+Misrepresentation requests come back as a red "declined — no model call" card.
+The FastAPI layer (`web.py`) holds no agent logic — it calls `build_triage_agent`
+and `decide_and_save` exactly as the CLI does.
+
 ## Layout
 
 ```
@@ -42,10 +55,12 @@ src/realty_desk/
   hooks.py        AuditHooks — lifecycle logging of tool calls (Task 5C)
   agent.py        build_triage_agent() — ties tools + guardrail + output_type together
   connection.py   Task 0 bare connectivity agent
-  ui.py           shared Rich console + small formatters (presentation layer only)
-  main.py         the one-command demo
+  ui.py           shared Rich console + small formatters (CLI presentation only)
+  main.py         the one-command CLI demo
+  web.py          FastAPI layer: /api/triage, /api/saved, /api/reset (no agent logic)
+  static/index.html   the single-page web UI
 leads.json        6 fixtures (committed)
-saved.json        starts as [] (committed)
+saved.json        the callback list; regenerated on each CLI run (committed)
 ```
 
 ## Design seams (for a late spec change)

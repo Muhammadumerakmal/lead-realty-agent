@@ -4,18 +4,21 @@ version = "0.1.0"
 description = "Realty desk triage agent — turns one raw client inquiry into a typed verdict your code can act on."
 readme = "README.md"
 authors = [
-    { name = "Muhammed Ali Akmal", email = "azizakmal575@gmail.com" }
+    { name = "muhammadumerakmal" }
 ]
 requires-python = ">=3.13"
 dependencies = [
+    "fastapi>=0.141.1",
     "openai-agents>=0.22.0",
     "pydantic>=2.13.5",
     "python-dotenv>=1.2.3",
     "rich>=15.0.0",
+    "uvicorn>=0.52.4",
 ]
 
 [project.scripts]
 realty-desk = "realty_desk.main:main"
+realty-desk-web = "realty_desk.web:main"
 
 [build-system]
 requires = ["uv_build>=0.12.3,<0.13.0"]

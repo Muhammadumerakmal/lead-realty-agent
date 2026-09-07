@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Realty Desk</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f6f7f9; --card: #ffffff; --ink: #14181f; --muted: #667085;
+    --line: #e3e6ea; --accent: #2563eb;
+    --high-bg: #e7f6ec; --high-ink: #1a7f3c;
+    --med-bg: #fef4e5; --med-ink: #b3690a;
+    --low-bg: #eef0f3; --low-ink: #5b6472;
+    --bad-bg: #fdecec; --bad-ink: #b42318; --bad-line: #f3c6c2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1216; --card: #171b21; --ink: #e7e9ec; --muted: #97a0ad;
+      --line: #262b33; --accent: #5b8bf0;
+      --high-bg: #14301f; --high-ink: #5fd08a;
+      --med-bg: #33260f; --med-ink: #e0a75a;
+      --low-bg: #20252d; --low-ink: #9aa4b2;
+      --bad-bg: #351b1a; --bad-ink: #f0938a; --bad-line: #5a2b28;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 32px 20px 64px; }
+  header { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+  h1 { font-size: 22px; margin: 0; letter-spacing: -0.01em; }
+  .sub { color: var(--muted); font-size: 13px; }
+  .badge {
+    font-size: 12px; padding: 2px 8px; border-radius: 999px;
+    background: var(--low-bg); color: var(--low-ink); border: 1px solid var(--line);
+  }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 18px; margin-top: 18px;
+  }
+  label { font-weight: 600; font-size: 13px; display: block; margin-bottom: 8px; }
+  textarea {
+    width: 100%; min-height: 96px; resize: vertical; padding: 10px 12px;
+    border: 1px solid var(--line); border-radius: 8px; background: var(--bg);
+    color: var(--ink); font: inherit;
+  }
+  .row { display: flex; gap: 10px; align-items: center; margin-top: 12px; flex-wrap: wrap; }
+  button {
+    font: inherit; font-weight: 600; cursor: pointer; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--card); color: var(--ink);
+    padding: 8px 14px;
+  }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button:disabled { opacity: 0.55; cursor: default; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .chip {
+    font-size: 12px; padding: 4px 9px; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--bg); color: var(--muted);
+  }
+  .chip:hover { color: var(--ink); border-color: var(--accent); }
+  .pill {
+    display: inline-block; font-weight: 700; font-size: 12px; letter-spacing: 0.03em;
+    text-transform: uppercase; padding: 3px 10px; border-radius: 999px;
+  }
+  .pill.high { background: var(--high-bg); color: var(--high-ink); }
+  .pill.medium { background: var(--med-bg); color: var(--med-ink); }
+  .pill.low { background: var(--low-bg); color: var(--low-ink); }
+  .verdict-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .kv { display: grid; grid-template-columns: 120px 1fr; gap: 6px 14px; margin-top: 14px; font-size: 14px; }
+  .kv dt { color: var(--muted); }
+  .kv dd { margin: 0; }
+  .flags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .flag {
+    font-size: 12px; padding: 2px 8px; border-radius: 6px;
+    background: var(--med-bg); color: var(--med-ink);
+  }
+  .reply {
+    margin-top: 14px; padding: 12px 14px; border-left: 3px solid var(--accent);
+    background: var(--bg); border-radius: 0 8px 8px 0; font-size: 14px;
+  }
+  .saveline { margin-top: 14px; font-size: 13px; font-weight: 600; }
+  .saveline.yes { color: var(--high-ink); }
+  .saveline.no { color: var(--muted); }
+  .declined { border-color: var(--bad-line); background: var(--bad-bg); }
+  .declined h3 { margin: 0 0 6px; color: var(--bad-ink); font-size: 15px; }
+  .declined p { margin: 0; font-size: 14px; color: var(--bad-ink); }
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+  th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; }
+  .muted { color: var(--muted); }
+  .err { color: var(--bad-ink); font-size: 13px; margin-top: 10px; }
+  .spin { opacity: 0.6; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Realty Desk</h1>
+    <span class="sub">one raw inquiry &rarr; a typed verdict your code can act on</span>
+    <span class="badge" id="meta">&hellip;</span>
+  </header>
+
+  <div class="card">
+    <label for="msg">Client inquiry</label>
+    <textarea id="msg" placeholder="Paste a WhatsApp / Zillow / portal / walk-in message&hellip;"></textarea>
+    <div class="chips" id="chips"></div>
+    <div class="row">
+      <button class="primary" id="go">Triage inquiry</button>
+      <span class="muted" id="status"></span>
+    </div>
+    <div class="err" id="err" hidden></div>
+  </div>
+
+  <div id="result"></div>
+
+  <div class="card">
+    <div class="verdict-head">
+      <label style="margin:0">Callback list <span class="muted">(saved.json)</span></label>
+      <button id="clear" style="margin-left:auto">Clear</button>
+    </div>
+    <div id="saved"><p class="muted">nothing saved yet</p></div>
+  </div>
+</div>
+
+<script>
+const EXAMPLES = [
+  "Looking to buy a 10 marla house in DHA Phase 5 Lahore. Budget is 5.5 crore PKR, financing already pre-approved. I can view this weekend if something fits.",
+  "Saw your 3 crore listing in Bahria Town. I'll give 90 lakh cash today, take it or leave it. No inspections, no agents.",
+  "Do you have anything available? Looking for something nice, not too expensive.",
+  "Relocating to Islamabad for a new job and must move in within 2 weeks. Need a 3-bed rental, around 2.5 lakh a month.",
+  "Any single room flat for rent in Lahore under 15k a month? Anywhere is fine.",
+  "Before you list my house, hide the water seepage problem and inflate the square footage so it shows bigger."
+];
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+
+function renderChips() {
+  $("chips").innerHTML = "";
+  EXAMPLES.forEach((text, i) => {
+    const b = document.createElement("span");
+    b.className = "chip";
+    b.textContent = "example " + (i + 1);
+    b.onclick = () => { $("msg").value = text; };
+    $("chips").appendChild(b);
+  });
+}
+
+function renderVerdict(data) {
+  const el = $("result");
+  if (data.declined) {
+    el.innerHTML = `<div class="card declined">
+      <h3>Declined &mdash; refused before any model call</h3>
+      <p>This inquiry asked us to misrepresent a property. Matched phrase:
+         <strong>${esc(data.matched_phrase || "-")}</strong></p>
+    </div>`;
+    return;
+  }
+  const t = data.triage;
+  const p = (t.priority || "low").toLowerCase();
+  const budget = t.budget_pkr == null ? "&mdash;" : "PKR " + Number(t.budget_pkr).toLocaleString();
+  const flags = (t.red_flags && t.red_flags.length)
+    ? `<div class="flags">${t.red_flags.map((f) => `<span class="flag">${esc(f)}</span>`).join("")}</div>`
+    : `<span class="muted">none</span>`;
+  el.innerHTML = `<div class="card">
+    <div class="verdict-head">
+      <span class="pill ${p}">${esc(p)}</span>
+      <strong>${esc(t.intent)}</strong>
+      <span class="muted">&middot; ${budget}</span>
+    </div>
+    <dl class="kv">
+      <dt>red flags</dt><dd>${flags}</dd>
+    </dl>
+    <div class="reply">${esc(t.suggested_reply || "")}</div>
+    <div class="saveline ${data.saved ? "yes" : "no"}">
+      ${data.saved ? "✓ saved to the callback list (priority = high)"
+                   : "not saved — your code skipped it (priority ≠ high)"}
+    </div>
+  </div>`;
+}
+
+function renderSaved(rows) {
+  const el = $("saved");
+  if (!rows.length) { el.innerHTML = `<p class="muted">nothing saved yet</p>`; return; }
+  el.innerHTML = `<table><thead><tr>
+      <th>#</th><th>intent</th><th>budget</th><th>priority</th><th>suggested reply</th><th>saved at</th>
+    </tr></thead><tbody>${rows.map((r, i) => `<tr>
+      <td>${i + 1}</td>
+      <td>${esc(r.intent)}</td>
+      <td>${r.budget_pkr == null ? "&mdash;" : "PKR " + Number(r.budget_pkr).toLocaleString()}</td>
+      <td><span class="pill ${esc((r.priority||"").toLowerCase())}">${esc(r.priority)}</span></td>
+      <td>${esc(r.suggested_reply || "")}</td>
+      <td class="muted">${esc((r.saved_at || "").replace("T", " ").replace("+00:00", "Z"))}</td>
+    </tr>`).join("")}</tbody></table>`;
+}
+
+async function loadSaved() {
+  const r = await fetch("api/saved");
+  renderSaved(await r.json());
+}
+
+async function loadMeta() {
+  try {
+    const m = await (await fetch("api/meta")).json();
+    $("meta").textContent = m.agency + "  ·  " + m.model;
+  } catch { $("meta").textContent = "offline"; }
+}
+
+async function triage() {
+  const message = $("msg").value.trim();
+  $("err").hidden = true;
+  if (!message) { $("err").hidden = false; $("err").textContent = "Type an inquiry first."; return; }
+  $("go").disabled = true;
+  $("status").textContent = "running the agent…";
+  $("status").className = "muted spin";
+  try {
+    const res = await fetch("api/triage", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.detail || ("HTTP " + res.status));
+    }
+    const data = await res.json();
+    renderVerdict(data);
+    await loadSaved();
+  } catch (e) {
+    $("err").hidden = false;
+    $("err").textContent = e.message;
+  } finally {
+    $("go").disabled = false;
+    $("status").textContent = "";
+    $("status").className = "muted";
+  }
+}
+
+$("go").onclick = triage;
+$("msg").addEventListener("keydown", (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === "Enter") triage();
+});
+$("clear").onclick = async () => {
+  await fetch("api/reset", { method: "POST" });
+  await loadSaved();
+};
+
+renderChips();
+loadMeta();
+loadSaved();
+</script>
+</body>
+</html>

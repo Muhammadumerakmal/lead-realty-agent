@@ -62,6 +62,13 @@ _Covered by the planning prompts above._ `hooks.py` (`AuditHooks` +
    automatic fallback to `gemini-2.5-flash`. Ran the full demo live on OpenAI and
    committed the resulting `saved.json` (L001 + L004, both priority=high).
 
+8. `make ui also` -> `Web app (FastAPI + page)` — added `web.py` (a thin FastAPI
+   layer: `/api/triage`, `/api/saved`, `/api/reset`, `/api/meta`) and
+   `static/index.html`, a theme-aware single page that POSTs an inquiry and
+   renders the typed verdict + save status. `realty-desk-web` script entry.
+9. `change the author name to muhammadumerakmal` — updated `pyproject.toml`
+   `authors` and the local `git config user.name`.
+
 ## Amendment
 
 _(Record a late spec change and the one-line request that absorbed it here.)_

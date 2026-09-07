@@ -4,17 +4,17 @@
     "budget_pkr": 55000000,
     "red_flags": [],
     "priority": "high",
-    "suggested_reply": "We have a 10 marla house available in DHA Phase 5 for PKR 55,000,000. Our available agents this weekend are Sana and Bilal. When would you like to schedule a viewing?",
+    "suggested_reply": "We have a 10 marla house available in DHA Phase 5 with an asking price of PKR 55,000,000. Our agents Sana and Bilal are available for viewings this weekend. Would you like to schedule a time?",
     "lead_id": "L001",
-    "saved_at": "2026-09-07T10:51:31+00:00"
+    "saved_at": "2026-09-07T11:02:12+00:00"
   },
   {
     "intent": "rent",
     "budget_pkr": 250000,
     "red_flags": [],
     "priority": "high",
-    "suggested_reply": "We have a 3-bed rental available in G-11 for PKR 250,000. Given your timeline, would you like to schedule a viewing?",
+    "suggested_reply": "We have a 3-bedroom rental available in G-11, Islamabad for PKR 250,000. Given your timeline, would you like to schedule a viewing?",
     "lead_id": "L004",
-    "saved_at": "2026-09-07T10:51:38+00:00"
+    "saved_at": "2026-09-07T11:02:19+00:00"
   }
 ]
